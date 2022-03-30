@@ -1,9 +1,11 @@
 
 rummy_srcs = [
-    'src/source.c',
-    'src/hello.c',
+    'src/game/card.c',
+    'src/game/deck.c',
     'src/util/memory/allocator.c',
     'src/util/random.c',
+    'src/source.c',
+    'src/hello.c',
 ]
 
 rummy_deps = [ threads_dep ]
