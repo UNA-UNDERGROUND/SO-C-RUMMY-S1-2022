@@ -11,3 +11,5 @@ Card *createCard(int color, int value) {
 	}
 	return card;
 }
+
+void card_deleter(void *card) { free(card); }

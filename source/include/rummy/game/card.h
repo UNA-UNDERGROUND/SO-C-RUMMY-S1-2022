@@ -17,3 +17,10 @@ typedef struct {
  * @return Card* the card created
  */
 Card *createCard(int color, int value);
+
+/**
+ * @brief card deleter
+ *
+ * @param card the card to delete
+ */
+void card_deleter(void *card);
