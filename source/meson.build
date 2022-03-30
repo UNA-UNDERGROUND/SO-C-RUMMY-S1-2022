@@ -2,6 +2,7 @@
 rummy_srcs = [
     'src/source.c',
     'src/hello.c',
+    'src/util/memory/allocator.c',
 ]
 
 rummy_deps = [ threads_dep ]
