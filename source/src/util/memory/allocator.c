@@ -10,19 +10,19 @@ void **alloc_array(size_t size) {
 	return array;
 }
 
-void free_array(void ***array, size_t size, Deleter deleter) {
+void free_array(void **array, size_t size, Deleter deleter) {
 	if (array == NULL) {
 		return;
 	}
 	if (deleter != NULL) {
 		for (size_t i = 0; i < size; i++) {
-			deleter((*array)[i]);
-			(*array)[i] = NULL;
+			deleter(array[i]);
+			array[i] = NULL;
 		}
 	} else {
 		for (size_t i = 0; i < size; i++) {
-			free((*array)[i]);
-			(*array)[i] = NULL;
+			free(array[i]);
+			array[i] = NULL;
 		}
 	}
 	free(*array);

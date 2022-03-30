@@ -30,4 +30,4 @@ void **alloc_array(size_t size);
  * @param deleter the function to call to free the memory of each element, if
  * null just free the memory
  */
-void free_array(void ***ptr, size_t size, Deleter deleter);
+void free_array(void **ptr, size_t size, Deleter deleter);
