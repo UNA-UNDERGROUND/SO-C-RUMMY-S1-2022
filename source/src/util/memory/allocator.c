@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <rummy/util/memory/allocator.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -5,10 +6,7 @@
 
 void **alloc_array(size_t size) {
 	void *array = malloc(size * sizeof(void *));
-	if (array == NULL) {
-		printf("Error: could not allocate memory\n");
-		exit(EXIT_FAILURE);
-	}
+	assert(array != NULL);
 	return array;
 }
 
