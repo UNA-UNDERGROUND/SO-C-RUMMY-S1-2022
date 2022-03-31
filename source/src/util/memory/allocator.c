@@ -1,8 +1,10 @@
 #include <assert.h>
+#include <memory.h>
 #include <rummy/util/memory/allocator.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 
 void **alloc_array(size_t size) {
 	void *array = malloc(size * sizeof(void *));
@@ -27,4 +29,32 @@ void free_array(void **array, size_t size, Deleter deleter) {
 	}
 	free(*array);
 	*array = NULL;
+}
+
+void copy_array(void **src, void **dst, size_t size_src, size_t size_dst,
+                Copier copier) {
+	if (src == NULL || dst == NULL) {
+		return;
+	}
+	if (copier != NULL) {
+		for (size_t i = 0; i < size_src; i++) {
+			copier(&src[i], &dst[i]);
+		}
+	} else {
+		memcpy_s(*dst, size_dst, *src, size_src);
+	}
+}
+
+void move_array(void **src, void **dst, size_t size_src, size_t size_dst,
+                Mover mover) {
+	if (src == NULL || dst == NULL) {
+		return;
+	}
+	if (mover != NULL) {
+		for (size_t i = 0; i < size_src; i++) {
+			mover(&src[i], &dst[i]);
+		}
+	} else {
+		memmove_s(*dst, size_dst, *src, size_src);
+	}
 }
