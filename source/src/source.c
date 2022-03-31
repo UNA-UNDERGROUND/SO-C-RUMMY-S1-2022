@@ -1,4 +1,7 @@
 #include <rummy/render/main_menu.h>
+// windows define so we can use the same code on windows and linux
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
 
 int main() {
 	while (1) {
