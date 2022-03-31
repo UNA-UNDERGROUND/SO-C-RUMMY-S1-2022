@@ -11,7 +11,6 @@ rummy_srcs = [
     'src/util/memory/vector.c',
     'src/util/random.c',
     'src/source.c',
-    'src/hello.c',
 ]
 
 rummy_deps = [ threads_dep ]
