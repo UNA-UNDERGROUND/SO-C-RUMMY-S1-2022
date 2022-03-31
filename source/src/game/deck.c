@@ -1,5 +1,5 @@
-#include "rummy/game/card.h"
 #include <assert.h>
+#include <rummy/game/card.h>
 #include <rummy/game/deck.h>
 #include <rummy/util/memory/allocator.h>
 #include <rummy/util/random.h>
