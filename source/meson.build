@@ -5,6 +5,7 @@ rummy_srcs = [
     'src/game/hand.c',
     'src/game/player.c',
     'src/util/memory/allocator.c',
+    'src/util/memory/common.c',
     'src/util/random.c',
     'src/source.c',
     'src/hello.c',
