@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 void **alloc_array(size_t size) {
 	void *array = malloc(size * sizeof(void *));
 	assert(array != NULL);
@@ -41,7 +40,8 @@ void copy_array(void **src, void **dst, size_t size_src, size_t size_dst,
 			copier(&src[i], &dst[i]);
 		}
 	} else {
-		memcpy_s(*dst, size_dst, *src, size_src);
+		assert(size_src <= size_dst);
+		memcpy(*dst, *src, size_src * sizeof(void *));
 	}
 }
 
@@ -55,6 +55,7 @@ void move_array(void **src, void **dst, size_t size_src, size_t size_dst,
 			mover(&src[i], &dst[i]);
 		}
 	} else {
-		memmove_s(*dst, size_dst, *src, size_src);
+		assert(size_src <= size_dst);
+		memmove(*dst, *src, size_src * sizeof(void *));
 	}
 }
