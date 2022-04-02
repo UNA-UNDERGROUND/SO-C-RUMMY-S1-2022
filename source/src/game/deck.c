@@ -25,12 +25,13 @@ void initDeck(Deck *deck) {
 	if (deck == NULL || deck->cards != NULL) {
 		return;
 	}
-	deck->cards = (Card **)alloc_array(DECK_MAX_SIZE);
 	// initialize the deck from 2 decks
+	deck->cards = (Card **)alloc_array(DECK_MAX_SIZE);
+	deck->size = 0;
 	// the decks have card values from 0 to 13 in 4 colors + 2 jokers
 	// the jokers are represented by the value -1
 	for (int deck_n = 0; deck_n < 2; deck_n++) {
-		for (int i = 0; i < DECK_MAX_SIZE; i++) {
+		for (int i = 0; i < SIZE_PER_DECK - 2; i++) {
 			pushCard(deck, createCard(i / 13, i % 13));
 		}
 		// put 2 jokers at the end of the deck

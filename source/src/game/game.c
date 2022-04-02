@@ -1,79 +1,105 @@
+#include "rummy/render/render.h"
 #include <bits/pthreadtypes.h>
 #include <pthread.h>
+#include <rummy/game/combination.h>
+#include <rummy/game/deck.h>
 #include <rummy/game/game.h>
+#include <rummy/util/memory/vector.h>
 #include <sched.h>
 #include <stdio.h>
+#include <unistd.h>
 
-pthread_mutex_t game_mutex;
-pthread_cond_t game_thread_ready;
-pthread_cond_t player_thread_ready;
-int game_thread_ready_flag = 0;
-int player_thread_ready_flag = 0;
-int actual_player_id = 0;
-int end_game;
+// mutex sync flags
+pthread_mutex_t players_mutex[4] = {
+    PTHREAD_MUTEX_INITIALIZER, PTHREAD_MUTEX_INITIALIZER,
+    PTHREAD_MUTEX_INITIALIZER, PTHREAD_MUTEX_INITIALIZER};
+int actual_player_id = -1;
+int player_finished = 0;
+int end_game = 0;
+int game_started = 0;
+
+game_state_t game_state;
+
+void init_game_state() {
+	initDeck(&game_state.board.deck);
+	shuffleDeck(&game_state.board.deck);
+	new_vector(&game_state.board.combinations);
+}
+void clear_game_state() {
+	delete_vector(game_state.board.combinations, combination_deleter);
+	clearDeck(&game_state.board.deck);
+}
+
+void game_logic() {
+	int option = 0;
+	clear_screen();
+	printf("Do you want to end the game?\n");
+	printf("1. Yes\n");
+	printf("2. No\n");
+	scanf("%d", &option);
+	if (option == 1) {
+		end_game = 1;
+	}
+}
+void player_logic(int player_id) {
+	clear_screen();
+	printf("player : %d thread\n", player_id);
+	sleep(1);
+}
 
 void *game_thread_main(void *ptr) {
-	// set/reset the game flags
-	end_game = 0;
+	init_game_state();
+	// lock the players mutex
+	for (int i = 0; i < 4; i++) {
+		pthread_mutex_lock(&players_mutex[i]);
+	}
+	player_finished = 0;
+	game_started = 1;
 	actual_player_id = 0;
-    player_thread_ready_flag = 0;
-	// do game initialization
-	// end of game initialization
+	end_game = 0;
+
 	while (end_game == 0) {
-		// set the game thread ready flag
-		game_thread_ready_flag = 0;
-		pthread_cond_signal(&game_thread_ready);
-		// game logic
-		printf("game thread main\n");
-		// ask if want to end game
-		int option = 0;
-		printf("Do you want to end the game?\n");
-		printf("1. Yes\n");
-		printf("2. No\n");
-		scanf("%d", &option);
-		if (option == 1) {
-			end_game = 1;
-			continue;
+		game_logic();
+		if (end_game == 1) {
+			break;
 		}
-		// end of game logic
-		// let the players threads know that the game is ready
-		game_thread_ready_flag = 1;
-		pthread_cond_signal(&game_thread_ready);
-		// wait until the next player finishes
-		while (player_thread_ready_flag == 0) {
-			pthread_cond_wait(&player_thread_ready, &game_mutex);
+		// unlock the actual player mutex
+		pthread_mutex_unlock(&players_mutex[actual_player_id]);
+		// wait until the actual player finish his turn
+		while (player_finished == 0) {
+			sched_yield();
 		}
-		// reset the player thread ready flag
-		player_thread_ready_flag = 0;
-		// update the actual player id
+		player_finished = 0;
+		// lock the actual player mutex
+		pthread_mutex_lock(&players_mutex[actual_player_id]);
+		// get the next player
 		actual_player_id = (actual_player_id + 1) % 4;
 	}
-	// game thread unitialization
-	// end of game unitialization
-	// reset the initialized flag
-	game_thread_ready_flag = 0;
+	clear_game_state();
+	// unlock the players mutex
+	for (int i = 0; i < 4; i++) {
+		pthread_mutex_unlock(&players_mutex[i]);
+	}
+	player_finished = 0;
+	game_started = 0;
 	return 0;
 }
 void *player_thread(void *player_id_ptr) {
 	int player_id = *((int *)player_id_ptr);
-	// before starting wait until the game thread is ready
-	// using a condition variable
-
-	while (game_thread_ready_flag == 0) {
-		pthread_cond_wait(&game_thread_ready, &game_mutex);
+	// wait until game is started
+	while (game_started == 0) {
+		sched_yield();
 	}
+	// player loop
 	while (end_game == 0) {
-		// wait until the game thread is ready and is the actual player
-		while (game_thread_ready_flag == 0 || actual_player_id != player_id) {
-			pthread_cond_wait(&game_thread_ready, &game_mutex);
+		pthread_mutex_lock(&players_mutex[player_id]);
+		if (end_game == 1) {
+			pthread_mutex_unlock(&players_mutex[player_id]);
+			break;
 		}
-		// init player logic
-		printf("player : %d thread\n", player_id);
-		// end of player logic - set the player thread ready flag
-		player_thread_ready_flag = 1;
-        game_thread_ready_flag = 0;
-		pthread_cond_signal(&game_thread_ready);
-        pthread_cond_signal(&player_thread_ready);
+		player_logic(player_id);
+		player_finished = 1;
+		pthread_mutex_unlock(&players_mutex[player_id]);
 	}
 	return 0;
 }

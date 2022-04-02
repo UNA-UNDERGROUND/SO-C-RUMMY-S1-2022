@@ -8,23 +8,19 @@ int main() {
 	while (1) {
 		OPT_MAIN_MENU option = render_main_menu();
 		switch (option) {
-		case NEW_GAME:
-			// launch the game thread
-			pthread_t game_thread;
+		case NEW_GAME: {
 			pthread_t player_threads[4];
 			int player_ids[4];
-			pthread_create(&game_thread, NULL, game_thread_main, NULL);
 			for (int i = 0; i < 4; i++) {
 				player_ids[i] = i;
 				pthread_create(&player_threads[i], NULL, player_thread,
 				               &player_ids[i]);
 			}
-			pthread_join(game_thread, NULL);
-			// join the player threads
-			for (int i = 0; i < 4; i++) {
-				pthread_join(player_threads[i], NULL);
-			}
-			break;
+			// the game thread run on the main thread
+			game_thread_main(&player_threads);
+			
+		}
+		break;
 		case EXIT_GAME:
 			return 0;
 		default:

@@ -1,5 +1,6 @@
 #include <rummy/util/random.h>
 #include <stddef.h>
+#define _XOPEN_SOURCE 
 #include <stdlib.h>
 #include <time.h>
 
