@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <rummy/util/memory/vector.h>
+#include <stddef.h>
 #include <stdlib.h>
 
 Vector *new_vector() {
@@ -12,7 +13,8 @@ Vector *new_vector() {
 
 void vector_push_back(Vector *vector, void *element) {
 	if (vector->size == vector->capacity) {
-		vector_resize(vector, vector->capacity * 2);
+		size_t new_capacity = vector->capacity == 0 ? 1 : vector->capacity * 2;
+		vector_resize(vector, new_capacity);
 	}
 	vector->data[vector->size] = element;
 	vector->size++;
@@ -32,7 +34,8 @@ void vector_resize(Vector *vector, size_t new_capacity) {
 	assert(new_capacity > 0);
 	assert(vector->size <= new_capacity);
 	// alloc a new array
-	void **new_data = malloc(new_capacity * sizeof(void *));
+	size_t new_size = sizeof(void *) * new_capacity;
+	void **new_data = malloc(new_size);
 	// copy old data to new array
 	for (size_t i = 0; i < vector->size; i++) {
 		new_data[i] = vector->data[i];
