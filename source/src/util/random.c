@@ -1,26 +1,29 @@
 #include <rummy/util/random.h>
 #include <stddef.h>
-#define _XOPEN_SOURCE 
+#define _XOPEN_SOURCE
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
+int seeded = 0;
+
 void reseed() {
 	srand(time(NULL));
-#ifdef _WIN32
-	srand((long)time(NULL));
-#else
 	srand48((long)time(NULL));
-#endif
 }
 
 float randomFloat() {
-#ifdef _WIN32
-	return (float)(rand()) / RAND_MAX;
-#else
+	if (!seeded) {
+		reseed();
+		seeded = 1;
+	}
 	return (float)(drand48());
-#endif
 }
 
 int randomInt(int min, int max) {
-	return (int)(randomFloat() * (max - min + 1)) + min;
+	if (!seeded) {
+		reseed();
+		seeded = 1;
+	}
+	return (min + randomFloat() * (max - min));
 }
