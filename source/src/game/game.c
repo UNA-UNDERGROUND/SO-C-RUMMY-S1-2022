@@ -15,6 +15,10 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+void render_player(Player *player);
+void render_board_combinations();
+void render_combination(combination_t *combination);
+
 // mutex sync flags
 pthread_mutex_t players_mutex[4] = {
     PTHREAD_MUTEX_INITIALIZER, PTHREAD_MUTEX_INITIALIZER,
@@ -45,7 +49,7 @@ void clear_player(Player *player) {
 void init_game_state() {
 	initDeck(&game_state.board.deck);
 	shuffleDeck(&game_state.board.deck);
-	new_vector(&game_state.board.combinations);
+	game_state.board.combinations = new_vector();
 	// init players
 	for (int i = 0; i < 4; i++) {
 		init_player(&game_state.players[i], i);
@@ -71,8 +75,6 @@ void game_logic() {
 		end_game = 1;
 	}
 }
-
-void render_player(Player *player);
 
 void player_logic(int player_id) {
 	render_player(&game_state.players[player_id]);
@@ -158,44 +160,49 @@ void render_line() {
 	printf("\n");
 }
 
+void render_card(Card *card) {
+
+	// the card holds number and color
+	// render the text with the color
+	// the joker is white, as normal text
+	assert(card != NULL);
+	// change the color
+	switch (card->color) {
+	case RED:
+		printf("\033[0;31m");
+		break;
+	case GREEN:
+		printf("\033[0;32m");
+		break;
+	case BLUE:
+		printf("\033[0;34m");
+		break;
+	case YELLOW:
+		printf("\033[0;33m");
+		break;
+	case JOKER:
+		printf("\033[0;37m");
+		break;
+	default:
+		// assert with an error
+		assert(0);
+		break;
+	}
+	// render the card if it is not a joker
+	if (card->color != JOKER) {
+		printf("%d", card->value);
+	} else {
+		printf("J");
+	}
+	// reset the color
+	printf("\033[0m");
+}
+
 void render_hand(Hand *hand) {
-	// get the console size
-	int width, height;
-	get_console_size(&width, &height);
 	// render the hand
 	printf("| ");
 	for (int i = 0; i < hand->cards->size; i++) {
-		// the card holds number and color
-		// render the text with the color
-		// the joker is white, as normal text
-		Card *card = (Card *)hand->cards->data[i];
-		assert(card != NULL);
-		// change the color
-		switch (card->color) {
-		case RED:
-			printf("\033[0;31m");
-			break;
-		case GREEN:
-			printf("\033[0;32m");
-			break;
-		case BLUE:
-			printf("\033[0;34m");
-			break;
-		case YELLOW:
-			printf("\033[0;33m");
-			break;
-		case JOKER:
-			printf("\033[0;37m");
-			break;
-		default:
-			// assert with an error
-			assert(0);
-			break;
-		}
-		// render the card
-		printf("%d", card->value);
-		// reset the color
-		printf("\033[0m");
+		render_card((Card *)hand->cards->data[i]);
 		// render the separator
 		printf(" | ");
 	}
@@ -205,8 +212,35 @@ void render_hand(Hand *hand) {
 void render_player(Player *player) {
 	assert(player != NULL);
 	clear_screen();
-	printf("player : %d\n", player->id);
+	printf("player : #%d\n", player->id + 1);
 	render_line();
 	printf("hand : \n");
 	render_hand(player->hand);
+	render_line();
+	printf("board : \n");
+	render_board_combinations();
+	render_line();
+	printf("possibly combinations : \n");
+	render_possible_combinations(player);
+	render_line();
+}
+
+void render_board_combinations() {
+	Vector *combinations = game_state.board.combinations;
+	size_t combinations_size = combinations->size;
+	for (int i = 0; i < combinations_size; i++) {
+		combination_t *combination = combinations->data[i];
+		render_combination(combination);
+	}
+}
+
+void render_combination(combination_t *combination) {
+	assert(combination != NULL);
+	printf("- ");
+	for (int i = 0; i < combination->num_cards; i++) {
+		render_card((Card *)combination->cards[i]);
+		// render the separator
+		printf(" - ");
+	}
+	printf("\n");
 }
