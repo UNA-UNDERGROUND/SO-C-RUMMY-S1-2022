@@ -2,9 +2,8 @@
 #include <rummy/game/hand.h>
 #include <stdlib.h>
 
-Hand *init_hand(int id) {
+Hand *init_hand() {
 	Hand *hand = malloc(sizeof(Hand));
-	hand->id = id;
 	hand->cards = new_vector();
 	return hand;
 }

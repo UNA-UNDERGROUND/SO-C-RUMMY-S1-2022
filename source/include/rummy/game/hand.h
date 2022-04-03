@@ -4,7 +4,6 @@
 
 // Hand C struct
 typedef struct {
-	int id;
 	Vector *cards;
 } Hand;
 
@@ -14,7 +13,7 @@ typedef struct {
  * @param id the id of the hand
  * @return Hand* the hand created
  */
-Hand *init_hand(int id);
+Hand *init_hand();
 
 /**
  * @brief add a card to the hand

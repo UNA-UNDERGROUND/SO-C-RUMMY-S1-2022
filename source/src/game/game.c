@@ -1,4 +1,6 @@
+#include "rummy/game/player.h"
 #include "rummy/render/render.h"
+#include <assert.h>
 #include <bits/pthreadtypes.h>
 #include <pthread.h>
 #include <rummy/game/combination.h>
@@ -21,13 +23,32 @@ int game_started = 0;
 
 game_state_t game_state;
 
+void init_player(Player *player, int id) {
+	assert(player != NULL);
+	player->id = id;
+	// init the player's hand
+	player->hand = init_hand();
+}
+void clear_player(Player *player) {
+	assert(player != NULL);
+	player->id = -1;
+	// clear the player's hand
+	delete_hand(player->hand);
+}
 void init_game_state() {
 	initDeck(&game_state.board.deck);
 	shuffleDeck(&game_state.board.deck);
 	new_vector(&game_state.board.combinations);
-
+	// init players
+	for (int i = 0; i < 4; i++) {
+		init_player(&game_state.players[i], i);
+	}
 }
 void clear_game_state() {
+	// clear players
+	for (int i = 0; i < 4; i++) {
+		clear_player(&game_state.players[i]);
+	}
 	delete_vector(game_state.board.combinations, combination_deleter);
 	clearDeck(&game_state.board.deck);
 }
