@@ -1,11 +1,11 @@
-#include "rummy/game/player.h"
-#include "rummy/render/render.h"
 #include <assert.h>
 #include <bits/pthreadtypes.h>
 #include <pthread.h>
 #include <rummy/game/combination.h>
 #include <rummy/game/deck.h>
 #include <rummy/game/game.h>
+#include <rummy/game/player.h>
+#include <rummy/render/render.h>
 #include <rummy/util/memory/vector.h>
 #include <sched.h>
 #include <stdio.h>
