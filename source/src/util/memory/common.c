@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <memory.h>
 #include <rummy/util/memory/common.h>
 #include <stdlib.h>
@@ -28,4 +29,11 @@ void pointer_mover(void **src, void **dst) {
 		dst = NULL;
 	}
 	src = NULL;
+}
+
+void swap(void **a, void **b) {
+	assert(a != NULL && b != NULL);
+	void *tmp = *a;
+	*a = *b;
+	*b = tmp;
 }

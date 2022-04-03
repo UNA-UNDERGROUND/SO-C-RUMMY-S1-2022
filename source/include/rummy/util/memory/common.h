@@ -56,3 +56,11 @@ void view_copier(void **src, void **dst);
  *
  */
 void pointer_mover(void **src, void **dst);
+
+/**
+ * @brief swaps the values of two pointers
+ *
+ * @param a the first pointer
+ * @param b the second pointer
+ */
+void swap(void **a, void **b);
