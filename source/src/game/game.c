@@ -1,15 +1,18 @@
 #include <assert.h>
 #include <bits/pthreadtypes.h>
 #include <pthread.h>
+#include <rummy/game/card.h>
 #include <rummy/game/combination.h>
 #include <rummy/game/deck.h>
 #include <rummy/game/game.h>
+#include <rummy/game/hand.h>
 #include <rummy/game/player.h>
 #include <rummy/render/render.h>
 #include <rummy/util/memory/vector.h>
 #include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 
 // mutex sync flags
@@ -28,6 +31,10 @@ void init_player(Player *player, int id) {
 	player->id = id;
 	// init the player's hand
 	player->hand = init_hand();
+	// give the player 14 cards
+	for (int i = 0; i < 14; i++) {
+		add_card(player->hand, popCard(&game_state.board.deck));
+	}
 }
 void clear_player(Player *player) {
 	assert(player != NULL);
@@ -64,9 +71,11 @@ void game_logic() {
 		end_game = 1;
 	}
 }
+
+void render_player(Player *player);
+
 void player_logic(int player_id) {
-	clear_screen();
-	printf("player : %d thread\n", player_id);
+	render_player(&game_state.players[player_id]);
 	sleep(1);
 }
 
@@ -125,4 +134,79 @@ void *player_thread(void *player_id_ptr) {
 		pthread_mutex_unlock(&players_mutex[player_id]);
 	}
 	return 0;
+}
+
+void get_console_size(int *width, int *height) {
+	struct winsize w;
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+	*width = w.ws_col;
+	*height = w.ws_row;
+}
+
+/**
+ * @brief renders a text line in the console
+ *
+ */
+void render_line() {
+	// get the console size
+	int width, height;
+	get_console_size(&width, &height);
+	// render the line
+	for (int i = 0; i < width; i++) {
+		printf("-");
+	}
+	printf("\n");
+}
+
+void render_hand(Hand *hand) {
+	// get the console size
+	int width, height;
+	get_console_size(&width, &height);
+	// render the hand
+	printf("| ");
+	for (int i = 0; i < hand->cards->size; i++) {
+		// the card holds number and color
+		// render the text with the color
+		// the joker is white, as normal text
+		Card *card = (Card *)hand->cards->data[i];
+		assert(card != NULL);
+		// change the color
+		switch (card->color) {
+		case RED:
+			printf("\033[0;31m");
+			break;
+		case GREEN:
+			printf("\033[0;32m");
+			break;
+		case BLUE:
+			printf("\033[0;34m");
+			break;
+		case YELLOW:
+			printf("\033[0;33m");
+			break;
+		case JOKER:
+			printf("\033[0;37m");
+			break;
+		default:
+			// assert with an error
+			assert(0);
+			break;
+		}
+		// render the card
+		printf("%d", card->value);
+		// reset the color
+		printf("\033[0m");
+		// render the separator
+		printf(" | ");
+	}
+	printf("\n");
+}
+
+void render_player(Player *player) {
+	assert(player != NULL);
+	clear_screen();
+	printf("player : %d\n", player->id);
+	render_line();
+	printf("hand : \n");
+	render_hand(player->hand);
 }
