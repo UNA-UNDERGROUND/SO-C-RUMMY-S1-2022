@@ -2,8 +2,9 @@
 #include <rummy/game/card.h>
 
 // se usan 2 juegos de bajaras, en otras palabras 104 naipes + 4 comodines
-#define SIZE_PER_DECK 108
-#define DECK_MAX_SIZE SIZE_PER_DECK * 2
+// 13 * 4 + 2 = 
+#define SIZE_PER_DECK 54
+#define DECK_MAX_SIZE 108
 
 typedef struct {
 	// up to 104 cards

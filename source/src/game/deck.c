@@ -2,6 +2,7 @@
 #include <rummy/game/card.h>
 #include <rummy/game/deck.h>
 #include <rummy/util/memory/allocator.h>
+#include <rummy/util/memory/common.h>
 #include <rummy/util/random.h>
 #include <stddef.h>
 
@@ -17,7 +18,7 @@ Card *popCard(Deck *deck) {
 	if (deck->size == 0) {
 		return NULL;
 	}
-	Card *card = deck->cards[deck->size--];
+	Card *card = deck->cards[(deck->size--) - 1];
 	return card;
 }
 
@@ -31,8 +32,10 @@ void initDeck(Deck *deck) {
 	// the decks have card values from 0 to 13 in 4 colors + 2 jokers
 	// the jokers are represented by the value -1
 	for (int deck_n = 0; deck_n < 2; deck_n++) {
-		for (int i = 0; i < SIZE_PER_DECK - 2; i++) {
-			pushCard(deck, createCard(i / 13, i % 13));
+		for (int color_n = 0; color_n < 4; color_n++) {
+			for (int value_n = 0; value_n < 13; value_n++) {
+				pushCard(deck, createCard(color_n, value_n));
+			}
 		}
 		// put 2 jokers at the end of the deck
 		pushCard(deck, createCard(-1, -1));
@@ -47,9 +50,7 @@ void shuffleDeck(Deck *deck) {
 	// shuffle the deck
 	for (int i = 0; i < DECK_MAX_SIZE; i++) {
 		int j = randomInt(0, DECK_MAX_SIZE - 1);
-		Card *temp = deck->cards[i];
-		deck->cards[i] = deck->cards[j];
-		deck->cards[j] = temp;
+		swap((void **)&deck->cards[i], (void **)&deck->cards[j]);
 	}
 }
 
