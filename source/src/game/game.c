@@ -7,6 +7,7 @@
 #include <rummy/util/memory/vector.h>
 #include <sched.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 // mutex sync flags
@@ -24,6 +25,7 @@ void init_game_state() {
 	initDeck(&game_state.board.deck);
 	shuffleDeck(&game_state.board.deck);
 	new_vector(&game_state.board.combinations);
+
 }
 void clear_game_state() {
 	delete_vector(game_state.board.combinations, combination_deleter);
