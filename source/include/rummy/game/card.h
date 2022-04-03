@@ -1,9 +1,17 @@
 #pragma once
 
-// -1 is the joker or wildcard
+// RGBY
+typedef enum {
+	JOKER = -1,
+	RED = 0,
+	GREEN = 1,
+	BLUE = 2,
+	YELLOW = 3,
+} card_color_t;
 
+// -1 is the joker or wildcard
 typedef struct {
-	int color;
+	card_color_t color;
 	int value;
 } Card;
 
@@ -16,7 +24,7 @@ typedef struct {
  * @param value the value of the card
  * @return Card* the card created
  */
-Card *createCard(int color, int value);
+Card *createCard(card_color_t color, int value);
 
 /**
  * @brief card deleter

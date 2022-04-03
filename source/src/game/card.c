@@ -1,7 +1,7 @@
 #include <rummy/game/card.h>
 #include <stdlib.h>
 
-Card *createCard(int color, int value) {
+Card *createCard(card_color_t color, int value) {
 	Card *card = (Card *)malloc(sizeof(Card));
 	card->color = color;
 	card->value = value;
