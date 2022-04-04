@@ -235,6 +235,7 @@ void render_combinations(Vector *combinations) {
 combination_t *try_same(Player *player, char combination[4]) {
 	assert(player != NULL);
 	assert(combination != NULL);
+	return NULL;
 }
 
 int player_action(Player *player) {
@@ -253,18 +254,18 @@ int player_action(Player *player) {
 		// the player can't do the moves if he has no cards left
 		// which is an instant win
 		int finished = 0;
-		Vector *combinations = new_vector();
-		// contains a list of all the cards that the player cannot select
-		int selected_cards[DECK_MAX_SIZE];
+		// Vector *combinations = new_vector();
+		//  contains a list of all the cards that the player cannot select
+		// int selected_cards[DECK_MAX_SIZE];
 		while (finished == 0) {
 			// print the combinations
 			render_line();
-			render_line();
-			printf("Your combinations:\n");
-			render_line();
-			render_line();
-			render_combinations(combinations);
-			render_line();
+			// render_line();
+			// printf("Your combinations:\n");
+			// render_line();
+			// render_line();
+			// render_combinations(combinations);
+			// render_line();
 			render_line();
 			printf("select the next move type\n");
 			printf("1. pair with different color\n");
@@ -286,10 +287,10 @@ int player_action(Player *player) {
 	case 2: {
 		// the player can draw a card from the deck
 		// the player can't draw a card the game ends
-		Card *card = popCard(&game_state.board.deck);
-		if (card != NULL) {
-			add_card(player->hand, card);
-		}
+		// Card *card = popCard(&game_state.board.deck);
+		// if (card != NULL) {
+		//	add_card(player->hand, card);
+		//}
 		return 1;
 	} break;
 	case 3: {
