@@ -209,20 +209,111 @@ void render_hand(Hand *hand) {
 	printf("\n");
 }
 
+void render_combinations(Vector *combinations) {
+	assert(combinations != NULL);
+	for (int i = 0; i < combinations->size; i++) {
+		combination_t *combination = (combination_t *)combinations->data[i];
+		printf("| ");
+		for (int j = 0; j < combination->num_cards; j++) {
+			render_card((Card *)combination->cards[j]);
+			// render the separator
+			printf(" | ");
+		}
+		printf("\n");
+	}
+}
+
+/**
+ * @brief returns a combination if the movement is valid
+ *
+ * @param player the player
+ * @param combination the combination, with chars with this values (R)ed,
+ * (G)reen, (B)lue, (Y)ellow, (J)oker, ( )empty
+ * @return combination_t* the combination if the movement is valid, NULL
+ * otherwise
+ */
+combination_t *try_same(Player *player, char combination[4]) {
+	assert(player != NULL);
+	assert(combination != NULL);
+}
+
+int player_action(Player *player) {
+	printf("select your next action\n");
+	printf("1. do a move\n");
+	printf("2. draw a card\n");
+	printf("3. end the game\n");
+	int option = 0;
+	scanf("%d", &option);
+	switch (option) {
+	case 1: {
+		// the player can do a pair, ladder or mix a card with one in the board
+		// also the move can be done with a joker as a wildcard
+		// however the moves need to sum at least 30 points
+		// if the sum is not 30 points, the player can't do the moves
+		// the player can't do the moves if he has no cards left
+		// which is an instant win
+		int finished = 0;
+		Vector *combinations = new_vector();
+		// contains a list of all the cards that the player cannot select
+		int selected_cards[DECK_MAX_SIZE];
+		while (finished == 0) {
+			// print the combinations
+			render_line();
+			render_line();
+			printf("Your combinations:\n");
+			render_line();
+			render_line();
+			render_combinations(combinations);
+			render_line();
+			render_line();
+			printf("select the next move type\n");
+			printf("1. pair with different color\n");
+			printf("2. ladder with same color\n");
+			printf("1. combination with a movement on the board\n");
+			printf("3. finish movements\n");
+			printf("4. cancel\n");
+			int move_type = 0;
+			scanf("%d", &move_type);
+			switch (move_type) {
+			// try a movement with same color
+			// pick the number and then the color
+			case 1: {
+
+			} break;
+			}
+		}
+	} break;
+	case 2: {
+		// the player can draw a card from the deck
+		// the player can't draw a card the game ends
+		Card *card = popCard(&game_state.board.deck);
+		if (card != NULL) {
+			add_card(player->hand, card);
+		}
+		return 1;
+	} break;
+	case 3: {
+		// the player can end the game
+		// the game ends
+		end_game = 1;
+		return 1;
+	} break;
+	}
+	return 0;
+}
 void render_player(Player *player) {
 	assert(player != NULL);
-	clear_screen();
-	printf("player : #%d\n", player->id + 1);
-	render_line();
-	printf("hand : \n");
-	render_hand(player->hand);
-	render_line();
-	printf("board : \n");
-	render_board_combinations();
-	render_line();
-	printf("possibly combinations : \n");
-	render_possible_combinations(player);
-	render_line();
+	do {
+		clear_screen();
+		printf("player : #%d\n", player->id + 1);
+		render_line();
+		printf("hand : \n");
+		render_hand(player->hand);
+		render_line();
+		printf("board : \n");
+		render_board_combinations();
+		render_line();
+	} while (player_action(player) != 1);
 }
 
 void render_board_combinations() {

@@ -29,17 +29,18 @@ void initDeck(Deck *deck) {
 	// initialize the deck from 2 decks
 	deck->cards = (Card **)alloc_array(DECK_MAX_SIZE);
 	deck->size = 0;
+	int id = 0;
 	// the decks have card values from 0 to 13 in 4 colors + 2 jokers
 	// the jokers are represented by the value -1
 	for (int deck_n = 0; deck_n < 2; deck_n++) {
 		for (int color_n = 0; color_n < 4; color_n++) {
 			for (int value_n = 0; value_n < 13; value_n++) {
-				pushCard(deck, createCard(color_n, value_n));
+				pushCard(deck, createCard(color_n, value_n, id++));
 			}
 		}
 		// put 2 jokers at the end of the deck
-		pushCard(deck, createCard(-1, -1));
-		pushCard(deck, createCard(-1, -1));
+		pushCard(deck, createCard(-1, -1, id++));
+		pushCard(deck, createCard(-1, -1, id++));
 	}
 }
 
