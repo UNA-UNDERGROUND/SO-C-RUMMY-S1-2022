@@ -65,15 +65,15 @@ void clear_game_state() {
 }
 
 void game_logic() {
-	int option = 0;
-	clear_screen();
-	printf("Do you want to end the game?\n");
-	printf("1. Yes\n");
-	printf("2. No\n");
-	scanf("%d", &option);
-	if (option == 1) {
-		end_game = 1;
-	}
+	// int option = 0;
+	// clear_screen();
+	// printf("Do you want to end the game?\n");
+	// printf("1. Yes\n");
+	// printf("2. No\n");
+	// scanf("%d", &option);
+	// if (option == 1) {
+	//	end_game = 1;
+	// }
 }
 
 void player_logic(int player_id) {
@@ -282,6 +282,7 @@ int player_action(Player *player) {
 
 			} break;
 			}
+			return 1;
 		}
 	} break;
 	case 2: {
