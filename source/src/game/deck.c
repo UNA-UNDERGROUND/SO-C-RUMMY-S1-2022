@@ -60,4 +60,6 @@ void clearDeck(Deck *deck) {
 		return;
 	}
 	free_array((void **)deck->cards, DECK_MAX_SIZE, card_deleter);
+	deck->cards = NULL;
+	deck->size = 0;
 }
