@@ -78,7 +78,6 @@ void game_logic() {
 
 void player_logic(int player_id) {
 	render_player(&game_state.players[player_id]);
-	sleep(1);
 }
 
 void *game_thread_main(void *ptr) {
